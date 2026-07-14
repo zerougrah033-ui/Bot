@@ -494,6 +494,7 @@ async def on_guild_channel_delete(channel):
                 )
 
             break
+            
             # ==========================
 # MESSAGE EDIT LOG
 # ==========================
