@@ -485,13 +485,6 @@ async def on_guild_channel_delete(channel):
                 )
 
             break
-                except Exception as e:
-        print(e)
-(
-                    f"🚨 تم حظر {user.mention} بسبب حذف رتبة."
-                )
-
-            break
 
     except Exception as e:
         print(e)
