@@ -496,17 +496,6 @@ async def on_guild_channel_delete(channel):
     except Exception as e:
         print(e)
 
-                log = bot.get_channel(LOG_CHANNEL_ID)
-
-                if log:
-                    await log.send(
-                        f"🚨 تم حظر {user.mention} بسبب إنشاء رتب بكثرة."
-                    )
-
-            break
-
-    except Exception as e:
-        print(e)
         # ==========================
 # VOICE MUTE
 # ==========================
