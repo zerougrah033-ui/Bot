@@ -500,9 +500,6 @@ async def on_guild_channel_delete(channel):
 # MESSAGE EDIT LOG
 # ==========================
 
-@bot.event
-async def on_message_edit(before, after):
-
     if not MESSAGE_EDIT_LOG:
         return
 
@@ -552,9 +549,6 @@ async def on_message_edit(before, after):
 # MEMBER JOIN LOG
 # ==========================
 
-@bot.event
-async def on_member_join(member):
-
     if not MEMBER_JOIN_LOG:
         return
 
@@ -600,9 +594,6 @@ async def on_member_join(member):
 # MEMBER LEAVE LOG
 # ==========================
 
-@bot.event
-async def on_member_remove(member):
-
     if not MEMBER_LEAVE_LOG:
         return
 
@@ -641,9 +632,6 @@ async def on_member_remove(member):
     # ==========================
 # VOICE LOG
 # ==========================
-
-@bot.event
-async def on_voice_state_update(member, before, after):
 
     if not VOICE_LOG:
         return
@@ -721,9 +709,6 @@ async def on_voice_state_update(member, before, after):
     # ==========================
 # CHANNEL CREATE LOG
 # ==========================
-
-@bot.event
-async def on_guild_channel_create(channel):
 
     if not CHANNEL_LOG:
         return
