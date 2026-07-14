@@ -500,7 +500,8 @@ async def on_guild_channel_delete(channel):
             # ==========================
 # MESSAGE EDIT LOG
 # ==========================
-
+@bot.event
+async def on_message_edit(before, after):
     if not MESSAGE_EDIT_LOG:
         return
 
