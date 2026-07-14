@@ -14,6 +14,15 @@ TOKEN = os.getenv("TOKEN")
 
 LOG_CHANNEL_ID = 1525906374628741192
 
+MESSAGE_DELETE_LOG = True
+MESSAGE_EDIT_LOG = True
+MEMBER_JOIN_LOG = True
+MEMBER_LEAVE_LOG = True
+VOICE_LOG = True
+ROLE_LOG = True
+CHANNEL_LOG = True
+BAN_LOG = True
+
 SPAM_LIMIT = 3
 SPAM_WINDOW = 3
 
@@ -28,18 +37,7 @@ CHANNEL_CREATE_LIMIT = 3
 CHANNEL_CREATE_WINDOW = 10
 ROLE_CREATE_LIMIT = 3
 ROLE_CREATE_WINDOW = 10
-# ==========================
-# LOGS
-# ==========================
 
-MESSAGE_DELETE_LOG = True
-MESSAGE_EDIT_LOG = True
-MEMBER_JOIN_LOG = True
-MEMBER_LEAVE_LOG = True
-VOICE_LOG = True
-ROLE_LOG = True
-CHANNEL_LOG = True
-BAN_LOG = True
 # ==========================
 # INTENTS
 # ==========================
