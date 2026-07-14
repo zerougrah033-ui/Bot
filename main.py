@@ -494,6 +494,8 @@ async def on_guild_channel_delete(channel):
                 )
 
             break
+                except Exception as e:
+        print(e)
             
             # ==========================
 # MESSAGE EDIT LOG
@@ -864,9 +866,6 @@ async def on_guild_channel_create(channel):
                     )
 
             break
-
-    except Exception as e:
-        print(e)
         # ==========================
 # ANTI ROLE CREATE
 # ==========================
