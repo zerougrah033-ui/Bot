@@ -1769,6 +1769,52 @@ async def nickname(
             f"❌ {e}",
             ephemeral=True
         )
+                # ==========================
+# warns
+# ==========================
+        @bot.tree.command(
+    name="warns",
+    description="عرض تحذيرات عضو"
+)
+async def warns(
+    interaction: discord.Interaction,
+    member: discord.Member = None
+):
+
+    member = member or interaction.user
+
+    data = warnings[member.id]
+
+    await interaction.response.send_message(
+        f"👤 العضو: {member.mention}\n"
+        f"⚠️ التحذيرات: **{data['count']}**\n"
+        f"📝 آخر سبب: **{data['reason']}**"
+    )
+            # ==========================
+# clearwarns
+# ==========================
+@bot.tree.command(
+    name="clearwarns",
+    description="حذف جميع تحذيرات عضو"
+)
+async def clearwarns(
+    interaction: discord.Interaction,
+    member: discord.Member
+):
+
+    if not interaction.user.guild_permissions.moderate_members:
+        return await interaction.response.send_message(
+            "❌ ليس لديك صلاحية.",
+            ephemeral=True
+        )
+
+    warnings[member.id]["count"] = 0
+    warnings[member.id]["reason"] = "لا يوجد"
+
+    await interaction.response.send_message(
+        f"✅ تم حذف جميع تحذيرات {member.mention}."
+    )
+
         print("=" * 40)
 print("TOKEN:", TOKEN)
 print("=" * 40)
