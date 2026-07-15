@@ -1769,4 +1769,8 @@ async def nickname(
             f"❌ {e}",
             ephemeral=True
         )
-        bot.run(TOKEN)
+        print("=" * 40)
+print("TOKEN:", TOKEN)
+print("=" * 40)
+
+bot.run(TOKEN)
