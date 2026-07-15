@@ -1808,12 +1808,21 @@ async def clearwarns(
             ephemeral=True
         )
 
-    warnings[member.id]["count"] = 0
-    warnings[member.id]["reason"] = "لا يوجد"
+    warnings[member.id] = {
+        "count": 0,
+        "reason": "لا يوجد"
+    }
 
     await interaction.response.send_message(
         f"✅ تم حذف جميع تحذيرات {member.mention}."
     )
+
+    log = bot.get_channel(LOG_CHANNEL_ID)
+
+    if log:
+        await log.send(
+            f"🧹 {interaction.user.mention} حذف جميع تحذيرات {member.mention}."
+        )
 
         print("=" * 40)
 print("TOKEN:", TOKEN)
