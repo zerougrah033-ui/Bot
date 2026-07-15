@@ -1772,7 +1772,7 @@ async def nickname(
                 # ==========================
 # warns
 # ==========================
-        @bot.tree.command(
+@bot.tree.command(
     name="warns",
     description="عرض تحذيرات عضو"
 )
