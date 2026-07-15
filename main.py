@@ -1826,6 +1826,5 @@ async def clearwarns(
 
         print("=" * 40)
 print("TOKEN:", TOKEN)
-print("=" * 40)
-
+print("=" * 4)
 bot.run(TOKEN)
