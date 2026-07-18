@@ -66,6 +66,8 @@ joins = defaultdict(list)
 raid_joins = defaultdict(list)
 channel_creates = defaultdict(list)
 role_creates = defaultdict(list)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 # ==========================
 # READY
 # ==========================
