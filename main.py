@@ -364,8 +364,6 @@ try:
     
     # إذا رصد الذكاء الاصطناعي أي كلام سام، مسيء، كراهية، إلخ...
     if result.flagged:
-        # 1. حذف الرسالة
-        await message.delete()
         
         # 2. حساب عدد المخالفات وزيادة مدة الميوت (هنا تضع منطق الـ Timeout الخاص بك)
         user_id = message.author.id
