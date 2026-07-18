@@ -357,30 +357,7 @@ async def on_message(message: discord.Message):
                 )
 
                 return
-try:
-    # إرسال محتوى الرسالة للذكاء الاصطناعي لفحصها
-    response = openai_client.moderations.create(input=message.content)
-    result = response.results[0]
-    
-    # إذا رصد الذكاء الاصطناعي أي كلام سام، مسيء، كراهية، إلخ...
-    if result.flagged:
-        
-        # 2. حساب عدد المخالفات وزيادة مدة الميوت (هنا تضع منطق الـ Timeout الخاص بك)
-        user_id = message.author.id
-        user_violations[user_id] = user_violations.get(user_id, 0) + 1
-        count = user_violations[user_id]
-        
-        # مثال لتطبيق الميوت (تتضاعف المدة أو تزيد بناءً على الـ count)
-        import datetime
-        duration = datetime.timedelta(minutes=5 * count) # 5 دقائق مضروبة في رقم المخالفة
-        await message.author.timeout(duration, reason=f"AI Moderation: المخالفة رقم {count}")
-        
-        # 3. إرسال تنبيه في الروم ينحذف تلقائياً بعد 10 ثوانٍ
-        await message.channel.send(f"⚠️ {message.author.mention} تم حذف رسالتك وإعطاؤك ميوت بسبب كلام غير لائق.", delete_after=10)
-        return # لكي يتوقف البوت هنا ولا يكمل معالجة الرسالة المحذوفة
 
-except Exception as e:
-    print(f"خطأ في فحص الذكاء الاصطناعي: {e}")
     
                     # ==========================
     # ANTI CAPS
