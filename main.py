@@ -5,8 +5,7 @@ import asyncio
 import time
 import os
 from collections import defaultdict
-from groq import Groq
-import datetime
+
 
 # ==========================
 # CONFIG
@@ -66,7 +65,6 @@ joins = defaultdict(list)
 raid_joins = defaultdict(list)
 channel_creates = defaultdict(list)
 role_creates = defaultdict(list)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # ==========================
 # READY
@@ -1830,8 +1828,3 @@ async def nickname(
 print("TOKEN:", TOKEN)
 print("=" * 4)
 bot.run(TOKEN)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-groq_client = Groq(
-    api_key=GROQ_API_KEY
-)
