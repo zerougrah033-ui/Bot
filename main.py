@@ -64,7 +64,9 @@ joins = defaultdict(list)
 raid_joins = defaultdict(list)
 channel_creates = defaultdict(list)
 role_creates = defaultdict(list)
-
+openai_client = OpenAI(
+    
+api_key=os.getenv("OPENAI_API_KEY"))
 # ==========================
 # READY
 # ==========================
