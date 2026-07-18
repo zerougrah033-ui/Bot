@@ -260,14 +260,9 @@ async def on_message(message: discord.Message):
             pass
 
         return
-        @bot.event
-async def on_message(message):
-
+        
     if message.author.bot or not message.guild:
         return
-
-    # ⬇️ حط كود Groq هنا
-
     try:
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant",
@@ -319,7 +314,6 @@ async def on_message(message):
 
 
     await bot.process_commands(message)
-
         # ==========================
     # ANTI MENTION SPAM
     # ==========================
