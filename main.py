@@ -196,13 +196,6 @@ def is_protected(member: discord.Member) -> bool:
     # أي شخص لديه صلاحيات إدارة
     if (
         perms.administrator
-        or perms.manage_guild
-        or perms.manage_messages
-        or perms.manage_channels
-        or perms.manage_roles
-        or perms.kick_members
-        or perms.ban_members
-        or perms.moderate_members
     ):
         return True
 
