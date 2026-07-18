@@ -249,8 +249,9 @@ async def on_message(message: discord.Message):
         )
 
         result = response.choices[0].message.content.strip().upper()
+        
         print("رسالة:", message.content)
-print("نتيجة Groq:", result)
+        print("نتيجة Groq:", result)
 
         if result == "TOXIC":
 
