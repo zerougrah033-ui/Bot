@@ -6,6 +6,7 @@ import time
 import os
 from collections import defaultdict
 from groq import Groq
+import datetime
 
 # ==========================
 # CONFIG
@@ -259,6 +260,65 @@ async def on_message(message: discord.Message):
             pass
 
         return
+        @bot.event
+async def on_message(message):
+
+    if message.author.bot or not message.guild:
+        return
+
+    # ⬇️ حط كود Groq هنا
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+                    أنت نظام مراقبة لسيرفر ديسكورد.
+                    إذا كانت الرسالة تحتوي سب أو إهانة أو كراهية أو تهديد
+                    أجب فقط TOXIC.
+                    غير ذلك أجب فقط CLEAN.
+                    """
+                },
+                {
+                    "role": "user",
+                    "content": message.content
+                }
+            ],
+            max_tokens=5
+        )
+
+        result = response.choices[0].message.content.strip().upper()
+
+        if result == "TOXIC":
+
+            await message.delete()
+
+            user_id = message.author.id
+            user_violations[user_id] = user_violations.get(user_id, 0) + 1
+
+            count = user_violations[user_id]
+
+            duration = datetime.timedelta(minutes=5 * count)
+
+            await message.author.timeout(
+                duration,
+                reason=f"AI Groq Moderation - مخالفة رقم {count}"
+            )
+
+            await message.channel.send(
+                f"⚠️ {message.author.mention} تم حذف رسالتك وإعطاؤك ميوت بسبب كلام غير لائق.",
+                delete_after=10
+            )
+
+            return
+
+    except Exception as e:
+        print(f"خطأ Groq AI: {e}")
+
+
+    await bot.process_commands(message)
 
         # ==========================
     # ANTI MENTION SPAM
