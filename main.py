@@ -234,7 +234,8 @@ async def on_message(message: discord.Message):
         )
 
         result = response.results[0]
-
+    print("تم فحص الرسالة بواسطة OpenAI")
+    print(result)
         if result.flagged:
 
             await message.delete()
