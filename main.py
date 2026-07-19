@@ -5,7 +5,7 @@ import asyncio
 import time
 import os
 from collections import defaultdict
-from openai import OpenAI
+import requests
 # ==========================
 # CONFIG
 # ==========================
@@ -28,7 +28,13 @@ CHANNEL_CREATE_LIMIT = 3
 CHANNEL_CREATE_WINDOW = 10
 ROLE_CREATE_LIMIT = 3
 ROLE_CREATE_WINDOW = 10
+HF_TOKEN = os.getenv("HF_TOKEN")
 
+API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
+
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
 # ==========================
 # INTENTS
 # ==========================
@@ -64,9 +70,6 @@ joins = defaultdict(list)
 raid_joins = defaultdict(list)
 channel_creates = defaultdict(list)
 role_creates = defaultdict(list)
-openai_client = OpenAI(
-    
-api_key=os.getenv("OPENAI_API_KEY"))
 # ==========================
 # READY
 # ==========================
@@ -223,23 +226,36 @@ async def on_message(message: discord.Message):
         await bot.process_commands(message)
         return
 
-    uid = message.author.id
+        uid = message.author.id
     print("وصلت رسالة:", message.content)
     now = time.time()
 
     try:
-        response = openai_client.moderations.create(
-            model="omni-moderation-latest",
-            input=message.content
+        # استدعاء نموذج Hugging Face لفحص النص
+        # ملاحظة: تأكد من تعريف hf_client في بداية الملف لديك
+        response = hf_client.text_classification(
+            model="KoalaAI/Text-Moderation-with-BERT",
+            inputs=message.content
         )
-
-        result = response.results[0]
         
-        print("تم فحص الرسالة بواسطة OpenAI")
-        print(result)
+        print("تم فحص الرسالة بواسطة Hugging Face")
+        print(response) # لمراقبة النتيجة في الكونسول
         
-        if result.flagged:
+        # Hugging Face يرجع قائمة بالتصنيفات ونسبة الثقة (score) لكل تصنيف
+        # الكود أدناه يتحقق إذا كان أعلى تصنيف هو 'toxic' (أو حسب تصنيفات النموذج المستخدم)
+        is_flagged = False
+        
+        # بعض النماذج ترجع النتيجة كقائمة مباشرة، نأخذ التصنيف الأعلى ثقة
+        if response and isinstance(response, list):
+            # ترتيب النتائج من الأعلى ثقة للأقل
+            sorted_results = sorted(response, key=lambda x: x['score'], reverse=True)
+            top_prediction = sorted_results[0]
+            
+            # إذا كان التصنيف الأعلى هو SFW أو OK، فالرسالة سليمة. غير ذلك (مثل toxic, hate...الخ) تعتبر مخالفة
+            if top_prediction['label'].lower() not in ['sfw', 'ok', 'clean', 'normal'] and top_prediction['score'] > 0.7:
+                is_flagged = True
 
+        if is_flagged:
             await message.delete()
 
             warnings[uid]["count"] += 1
@@ -258,8 +274,8 @@ async def on_message(message: discord.Message):
             return
 
     except Exception as e:
-        print(f"OpenAI Moderation Error: {e}")
-
+        print(f"Hugging Face Moderation Error: {e}")
+        
     # ==========================
     # ANTI SPAM
     # ==========================
