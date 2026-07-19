@@ -404,6 +404,7 @@ async def on_message(message: discord.Message):
                         pass
 
                     return
+                    
                     try:
     response = openai_client.moderations.create(
         model="omni-moderation-latest",
