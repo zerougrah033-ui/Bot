@@ -224,6 +224,7 @@ async def on_message(message: discord.Message):
         return
 
     uid = message.author.id
+    print("وصلت رسالة:", message.content)
     now = time.time()
 
     try:
