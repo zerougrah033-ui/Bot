@@ -229,33 +229,37 @@ async def on_message(message: discord.Message):
         uid = message.author.id
     print("وصلت رسالة:", message.content)
     now = time.time()
+    uid = message.author.id
+    print("وصلت رسالة:", message.content)
+    now = time.time()
+
+    # تأكد أن البوت لا يفحص رسائله هو أو رسائل البوتات الأخرى
+    if message.author.bot:
+        return
 
     try:
-        # استدعاء نموذج Hugging Face لفحص النص
-        # ملاحظة: تأكد من تعريف hf_client في بداية الملف لديك
-        response = hf_client.text_classification(
-            model="KoalaAI/Text-Moderation-with-BERT",
-            inputs=message.content
+        # صياغة الأمر باللغة العربية والانجليزية معاً لضمان فهم النموذج للشتائم العربية
+        prompt = (
+            "Task: Check if the following text contains insult, hate speech, toxicity, profanity, or inappropriate content in Arabic or English.\n"
+            "Respond with only ONE word: either 'unsafe' if it is inappropriate/toxic, or 'safe' if it is clean.\n"
+            f"Text: {message.content}\n"
+            "Response:"
+        )
+
+        response = hf_client.text_generation(
+            model="meta-llama/Llama-Guard-3-8B",
+            prompt=prompt,
+            max_new_tokens=5,
+            temperature=0.1
         )
         
+        result_text = response.strip().lower()
         print("تم فحص الرسالة بواسطة Hugging Face")
-        print(response) # لمراقبة النتيجة في الكونسول
+        print(f"النص: {message.content} -> النتيجة: {result_text}")
         
-        # Hugging Face يرجع قائمة بالتصنيفات ونسبة الثقة (score) لكل تصنيف
-        # الكود أدناه يتحقق إذا كان أعلى تصنيف هو 'toxic' (أو حسب تصنيفات النموذج المستخدم)
-        is_flagged = False
-        
-        # بعض النماذج ترجع النتيجة كقائمة مباشرة، نأخذ التصنيف الأعلى ثقة
-        if response and isinstance(response, list):
-            # ترتيب النتائج من الأعلى ثقة للأقل
-            sorted_results = sorted(response, key=lambda x: x['score'], reverse=True)
-            top_prediction = sorted_results[0]
-            
-            # إذا كان التصنيف الأعلى هو SFW أو OK، فالرسالة سليمة. غير ذلك (مثل toxic, hate...الخ) تعتبر مخالفة
-            if top_prediction['label'].lower() not in ['sfw', 'ok', 'clean', 'normal'] and top_prediction['score'] > 0.7:
-                is_flagged = True
+        # نتحقق إذا كان النموذج قال unsafe أو لم يقل safe (للاحتياط)
+        if "unsafe" in result_text or "safe" not in result_text:
 
-        if is_flagged:
             await message.delete()
 
             warnings[uid]["count"] += 1
@@ -274,8 +278,9 @@ async def on_message(message: discord.Message):
             return
 
     except Exception as e:
-        print(f"Hugging Face Moderation Error: {e}")
+        print(f"Hugging Face Modern Moderation Error: {e}")
         
+    
     # ==========================
     # ANTI SPAM
     # ==========================
