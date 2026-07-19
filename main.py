@@ -404,6 +404,35 @@ async def on_message(message: discord.Message):
                         pass
 
                     return
+                    try:
+    response = openai_client.moderations.create(
+        model="omni-moderation-latest",
+        input=message.content
+    )
+
+    result = response.results[0]
+
+    if result.flagged:
+
+        await message.delete()
+
+        warnings[uid]["count"] += 1
+        warnings[uid]["reason"] = "AI Toxic Message"
+
+        await punish(
+            message.author,
+            "AI Toxic Message"
+        )
+
+        await message.channel.send(
+            f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
+            delete_after=10
+        )
+
+        return
+
+except Exception as e:
+    print(f"OpenAI Moderation Error: {e}")
 
     await bot.process_commands(message)
     # ==========================
@@ -1771,4 +1800,4 @@ async def nickname(
         print("=" * 40)
 print("TOKEN:", TOKEN)
 print("=" * 4)
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run(os.getenv("TOKEN"))
