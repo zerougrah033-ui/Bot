@@ -235,8 +235,6 @@ try:
 
     if result.flagged:
 
-        await message.delete()
-
         warnings[uid]["count"] += 1
         warnings[uid]["reason"] = "AI Toxic Message"
 
