@@ -224,7 +224,36 @@ async def on_message(message: discord.Message):
         return
 
     uid = message.author.id
-    now = time.time()(message)
+    now = time.time()
+try:
+    response = openai_client.moderations.create(
+        model="omni-moderation-latest",
+        input=message.content
+    )
+
+    result = response.results[0]
+
+    if result.flagged:
+
+        await message.delete()
+
+        warnings[uid]["count"] += 1
+        warnings[uid]["reason"] = "AI Toxic Message"
+
+        await punish(
+            message.author,
+            "AI Toxic Message"
+        )
+
+        await message.channel.send(
+            f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
+            delete_after=10
+        )
+
+        return
+except Exception as e:
+    print(f"OpenAI Moderation Error: {e}")
+
     # ==========================
     # ANTI SPAM
     # ==========================
@@ -405,35 +434,6 @@ async def on_message(message: discord.Message):
 
                     return
                     
-try:
-    response = openai_client.moderations.create(
-        model="omni-moderation-latest",
-        input=message.content
-    )
-
-    result = response.results[0]
-
-    if result.flagged:
-
-        await message.delete()
-
-        warnings[uid]["count"] += 1
-        warnings[uid]["reason"] = "AI Toxic Message"
-
-        await punish(
-            message.author,
-            "AI Toxic Message"
-        )
-
-        await message.channel.send(
-            f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
-            delete_after=10
-        )
-
-        return
-except Exception as e:
-    print(f"OpenAI Moderation Error: {e}")
-
     await bot.process_commands(message)
     # ==========================
 # ANTI RAID
