@@ -432,7 +432,6 @@ async def on_message(message: discord.Message):
 
         return
 
-except Exception as e:
     print(f"OpenAI Moderation Error: {e}")
 
     await bot.process_commands(message)
