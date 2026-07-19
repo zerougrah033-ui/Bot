@@ -1771,4 +1771,4 @@ async def nickname(
         print("=" * 40)
 print("TOKEN:", TOKEN)
 print("=" * 4)
-bot.run(TOKEN)
+bot.run(os.getenv("DISCORD_TOKEN"))
