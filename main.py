@@ -224,7 +224,7 @@ async def on_message(message: discord.Message):
         return
 
     uid = message.author.id
-now = time.time()
+    now = time.time()
 
     try:
         response = openai_client.moderations.create(
