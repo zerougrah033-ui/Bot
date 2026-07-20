@@ -223,7 +223,7 @@ async def on_message(message: discord.Message):
     # تجاهل المالك والإدارة
     if is_protected(message.author):
         await bot.process_commands(message)
-            return
+        return
         
         uid = message.author.id
         now = time.time()
