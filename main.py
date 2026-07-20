@@ -1825,13 +1825,7 @@ async def nickname(
             f"❌ {e}",
             ephemeral=True
         )
- HF_TOKEN = os.getenv("HF_TOKEN")
-
-hf_client = InferenceClient(
-    provider="hf-inference",
-    api_key=HF_TOKEN
-)
-
+ 
         print("=" * 40)
 print("TOKEN:", TOKEN)
 print("=" * 4)
