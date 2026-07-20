@@ -225,14 +225,9 @@ async def on_message(message: discord.Message):
         await bot.process_commands(message)
         return
         uid = message.author.id
-        now = time.time()
+now = time.time()
 
 print("وصلت رسالة:", message.content)
-
-# تجاهل رسائل البوتات
-if message.author.bot:
-        return
-
 try:
     prompt = f"""
 You are a moderation AI.
@@ -251,11 +246,11 @@ Answer:
 """
 
     response = hf_client.text_generation(
-    model="meta-llama/Llama-Guard-3-8B",
-    prompt=prompt,
-    max_new_tokens=2,
-    temperature=0,
-)
+        model="meta-llama/Llama-Guard-3-8B",
+        prompt=prompt,
+        max_new_tokens=2,
+        temperature=0,
+    )
 
     result = response.strip().lower()
 
@@ -282,10 +277,7 @@ Answer:
 
 except Exception as e:
     print(f"HF Moderation Error: {e}")
-
-    # لا توقف البوت، كمل أنظمة الحماية الأخرى
-    pass
-    
+      pass
     # ==========================
     # ANTI SPAM
     # ==========================
