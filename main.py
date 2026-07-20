@@ -277,7 +277,6 @@ Answer:
 
 except Exception as e:
     print(f"HF Moderation Error: {e}")
-      pass
     # ==========================
     # ANTI SPAM
     # ==========================
