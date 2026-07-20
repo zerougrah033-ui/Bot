@@ -257,7 +257,7 @@ Answer:
     temperature=0,
 )
 
-result = response.strip().lower()
+    result = response.strip().lower()
 
     print("HF Response:", result)
 
