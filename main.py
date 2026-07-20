@@ -225,61 +225,64 @@ async def on_message(message: discord.Message):
     if is_protected(message.author):
         await bot.process_commands(message)
         return
-
         uid = message.author.id
-    print("وصلت رسالة:", message.content)
-    now = time.time()
-    uid = message.author.id
-    print("وصلت رسالة:", message.content)
-    now = time.time()
+print("وصلت رسالة:", message.content)
+now = time.time()
 
-    # تأكد أن البوت لا يفحص رسائله هو أو رسائل البوتات الأخرى
-    if message.author.bot:
+# تجاهل رسائل البوتات
+if message.author.bot:
+    return
+
+try:
+    prompt = f"""
+You are a moderation AI.
+
+Determine whether the following message is safe or unsafe.
+
+Rules:
+- Reply with ONLY one word.
+- Reply "safe" if the message is acceptable.
+- Reply "unsafe" if it contains insults, harassment, hate speech, threats, profanity, sexual content, or any toxic content in Arabic or English.
+
+Message:
+{message.content}
+
+Answer:
+"""
+
+    response = hf_client.text_generation(
+        model="meta-llama/Llama-Guard-3-8B",
+        prompt=prompt,
+        max_new_tokens=3,
+        temperature=0,
+        return_full_text=False
+    )
+
+    result = response.strip().lower()
+
+    print("HF Response:", result)
+
+    if result.startswith("unsafe"):
+
+        await message.delete()
+
+        warnings[uid]["count"] += 1
+        warnings[uid]["reason"] = "AI Toxic Message"
+
+        await punish(
+            message.author,
+            "AI Toxic Message"
+        )
+
+        await message.channel.send(
+            f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
+            delete_after=10
+        )
+
         return
 
-    try:
-        # صياغة الأمر باللغة العربية والانجليزية معاً لضمان فهم النموذج للشتائم العربية
-        prompt = (
-            "Task: Check if the following text contains insult, hate speech, toxicity, profanity, or inappropriate content in Arabic or English.\n"
-            "Respond with only ONE word: either 'unsafe' if it is inappropriate/toxic, or 'safe' if it is clean.\n"
-            f"Text: {message.content}\n"
-            "Response:"
-        )
-
-        response = hf_client.text_generation(
-            model="meta-llama/Llama-Guard-3-8B",
-            prompt=prompt,
-            max_new_tokens=5,
-            temperature=0.1
-        )
-        
-        result_text = response.strip().lower()
-        print("تم فحص الرسالة بواسطة Hugging Face")
-        print(f"النص: {message.content} -> النتيجة: {result_text}")
-        
-        # نتحقق إذا كان النموذج قال unsafe أو لم يقل safe (للاحتياط)
-        if "unsafe" in result_text or "safe" not in result_text:
-
-            await message.delete()
-
-            warnings[uid]["count"] += 1
-            warnings[uid]["reason"] = "AI Toxic Message"
-
-            await punish(
-                message.author,
-                "AI Toxic Message"
-            )
-
-            await message.channel.send(
-                f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
-                delete_after=10
-            )
-
-            return
-
-    except Exception as e:
-        print(f"Hugging Face Modern Moderation Error: {e}")
-        
+except Exception as e:
+    print("HF Moderation Error:", e)
     
     # ==========================
     # ANTI SPAM
@@ -1822,7 +1825,12 @@ async def nickname(
             f"❌ {e}",
             ephemeral=True
         )
- 
+ HF_TOKEN = os.getenv("HF_TOKEN")
+
+hf_client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN
+)
 
         print("=" * 40)
 print("TOKEN:", TOKEN)
