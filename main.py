@@ -231,7 +231,7 @@ print("وصلت رسالة:", message.content)
 
 # تجاهل رسائل البوتات
 if message.author.bot:
-    return
+       return
 
 try:
     prompt = f"""
