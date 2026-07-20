@@ -6,6 +6,7 @@ import time
 import os
 from collections import defaultdict
 import requests
+from huggingface_hub import InferenceClient
 # ==========================
 # CONFIG
 # ==========================
@@ -29,12 +30,10 @@ CHANNEL_CREATE_WINDOW = 10
 ROLE_CREATE_LIMIT = 3
 ROLE_CREATE_WINDOW = 10
 HF_TOKEN = os.getenv("HF_TOKEN")
-
-API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
-
-headers = {
-    "Authorization": f"Bearer {HF_TOKEN}"
-}
+hf_client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN
+)
 # ==========================
 # INTENTS
 # ==========================
@@ -226,8 +225,9 @@ async def on_message(message: discord.Message):
         await bot.process_commands(message)
         return
         uid = message.author.id
+        now = time.time()
+
 print("وصلت رسالة:", message.content)
-now = time.time()
 
 # تجاهل رسائل البوتات
 if message.author.bot:
@@ -251,18 +251,17 @@ Answer:
 """
 
     response = hf_client.text_generation(
-        model="meta-llama/Llama-Guard-3-8B",
-        prompt=prompt,
-        max_new_tokens=3,
-        temperature=0,
-        return_full_text=False
-    )
+    model="meta-llama/Llama-Guard-3-8B",
+    prompt=prompt,
+    max_new_tokens=2,
+    temperature=0,
+)
 
-    result = response.strip().lower()
+result = response.strip().lower()
 
     print("HF Response:", result)
 
-    if result.startswith("unsafe"):
+    if "unsafe" in result:
 
         await message.delete()
 
@@ -282,7 +281,10 @@ Answer:
         return
 
 except Exception as e:
-    print("HF Moderation Error:", e)
+    print(f"HF Moderation Error: {e}")
+
+    # لا توقف البوت، كمل أنظمة الحماية الأخرى
+    pass
     
     # ==========================
     # ANTI SPAM
