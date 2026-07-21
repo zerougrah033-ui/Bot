@@ -222,27 +222,29 @@ async def on_message(message: discord.Message):
 # ANTI SPAM
 # ==========================
 
-spam[uid].append(now)
+    spam[uid].append(now)
 
-spam[uid] = [
-    t for t in spam[uid]
-    if now - t < SPAM_WINDOW
-]
+    spam[uid] = [
+        t for t in spam[uid]
+        if now - t < SPAM_WINDOW
+    ]
 
     if len(spam[uid]) >= SPAM_LIMIT:
-    
-try:
-    await message.delete()
-    except discord.Forbidden:
-        pass
 
-    warnings[uid]["count"] += 1
-    warnings[uid]["reason"] ="Spam"
+        try:
+            await message.delete()
+        except discord.Forbidden:
+            pass
 
-    await punish(message.author,"Spam"
-    )
+        warnings[uid]["count"] += 1
+        warnings[uid]["reason"] = "Spam"
 
-    return
+        await punish(
+            message.author,
+            "Spam"
+        )
+
+        return
         # ==========================
     # ANTI MENTION SPAM
     # ==========================
