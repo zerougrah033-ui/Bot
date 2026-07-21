@@ -231,8 +231,8 @@ spam[uid] = [
 
 if len(spam[uid]) >= SPAM_LIMIT:
 
-    try:
-        await message.delete()
+try:
+    await message.delete()
         
     except discord.Forbidden:
         pass
