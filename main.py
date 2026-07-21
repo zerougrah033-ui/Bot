@@ -224,15 +224,12 @@ async def on_message(message: discord.Message):
     if is_protected(message.author):
         await bot.process_commands(message)
         return
-        
-        uid = message.author.id
-        now = time.time()
+            uid = message.author.id
+    now = time.time()
 
-        print("وصلت رسالة:", 
-    message.content)
-        
-        try:
-           prompt = f"""
+    print("وصلت رسالة:", message.content)
+
+    prompt = f"""
 You are a moderation AI.
 
 Determine whether the following message is safe or unsafe.
@@ -261,16 +258,12 @@ Answer:
         print("HF Response:", result)
 
         if "unsafe" in result:
-
             await message.delete()
 
             warnings[uid]["count"] += 1
             warnings[uid]["reason"] = "AI Toxic Message"
 
-            await punish(
-                message.author,
-                "AI Toxic Message"
-            )
+            await punish(message.author, "AI Toxic Message")
 
             await message.channel.send(
                 f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
