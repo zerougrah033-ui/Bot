@@ -258,14 +258,14 @@ try:
     print("HF Response:", result)
 
     if "unsafe" in result:
-        await message.delete()
+         await message.delete()
 
         warnings[uid]["count"] += 1
         warnings[uid]["reason"] = "AI Toxic Message"
 
-        await punish(message.author, "AI Toxic Message")
+         await punish(message.author, "AI Toxic Message")
 
-        await message.channel.send(
+         await message.channel.send(
             f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
             delete_after=10
         )
