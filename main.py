@@ -248,39 +248,39 @@ Message:
 Answer:
 """
 
-     response =
-hf_client.text_generation(
-        model="meta-llama/Llama-Guard-3-8B",
-        prompt=prompt,
-        max_new_tokens=2,
-        temperature=0,
-    )
-
-    result = response.strip().lower()
-
-    print("HF Response:", result)
-
-    if "unsafe" in result:
-
-        await message.delete()
-
-        warnings[uid]["count"] += 1
-        warnings[uid]["reason"] = "AI Toxic Message"
-
-        await punish(
-            message.author,
-            "AI Toxic Message"
+    try:
+        response = hf_client.text_generation(
+            model="meta-llama/Llama-Guard-3-8B",
+            prompt=prompt,
+            max_new_tokens=2,
+            temperature=0,
         )
 
-        await message.channel.send(
-            f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
-            delete_after=10
-        )
+        result = response.strip().lower()
 
-        return
+        print("HF Response:", result)
 
-except Exception as e:
-    print(f"HF Moderation Error: {e}")
+        if "unsafe" in result:
+
+            await message.delete()
+
+            warnings[uid]["count"] += 1
+            warnings[uid]["reason"] = "AI Toxic Message"
+
+            await punish(
+                message.author,
+                "AI Toxic Message"
+            )
+
+            await message.channel.send(
+                f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
+                delete_after=10
+            )
+
+            return
+
+    except Exception as e:
+        print(f"HF Moderation Error: {e}")
     # ==========================
     # ANTI SPAM
     # ==========================
