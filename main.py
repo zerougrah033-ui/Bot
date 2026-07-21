@@ -265,10 +265,8 @@ try:
 
          await message.channel.send(
             f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
-            delete_after=10
-        )
-
-        return
+            delete_after=10)
+         return
 
 except Exception as e:
     print(f"HF Moderation Error: {e}")
