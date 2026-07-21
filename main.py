@@ -221,15 +221,15 @@ async def on_message(message: discord.Message):
 
     # تجاهل المالك والإدارة
     if is_protected(message.author):
-    await bot.process_commands(message)
-    return
+         await bot.process_commands(message)
+         return
     
     uid = message.author.id
     now = time.time()
 
     print("وصلت رسالة:", message.content)
 
-prompt = f"""
+    prompt = f"""
 You are a moderation AI.
 
 Determine whether the following message is safe or unsafe.
