@@ -230,7 +230,7 @@ spam[uid] = [
 ]
 
 if len(spam[uid]) >= SPAM_LIMIT:
-
+    
 try:
     await message.delete()
         
