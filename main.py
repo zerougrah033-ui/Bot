@@ -218,41 +218,65 @@ async def on_message(message: discord.Message):
     if is_protected(message.author):
          await bot.process_commands(message)
          return
-    # ==========================
-    # ANTI SPAM
-    # ==========================
+        # ==========================
+# ANTI SPAM
+# ==========================
 
-    spam[uid].append(now)
+spam[uid].append(now)
 
-    spam[uid] = [
-        t for t in spam[uid]
-        if now - t < SPAM_WINDOW
-    ]
+spam[uid] = [
+    t for t in spam[uid]
+    if now - t < SPAM_WINDOW
+]
 
-    if len(spam[uid]) >= SPAM_LIMIT:
+if len(spam[uid]) >= SPAM_LIMIT:
 
-        try:
-            await message.delete()
-        except:
-            pass
+    try:
+        await message.delete()
+    except discord.Forbidden:
+        pass
 
-        warnings[uid]["count"] += 1
-        warnings[uid]["reason"] = "Spam"
+    warnings[uid]["count"] += 1
+    warnings[uid]["reason"] = "Spam"
 
-        await punish(
-            message.author,
-            "Spam"
+    await punish(
+        message.author,
+        "Spam"
+    )
+
+    try:
+        embed = discord.Embed(
+            title="🚨 Auto Moderation",
+            description=f"{message.author.mention} تم اكتشاف مخالفة.",
+            color=discord.Color.red(),
+            timestamp=datetime.datetime.utcnow()
         )
 
-        try:
-            await message.channel.send(
-                f"🚫 {message.author.mention} يمنع السبام.",
-                delete_after=5
-            )
-        except:
-            pass
+        embed.add_field(
+            name="📌 المخالفة",
+            value="Spam",
+            inline=True
+        )
 
-        return
+        embed.add_field(
+            name="📊 عدد التحذيرات",
+            value=str(warnings[uid]["count"]),
+            inline=True
+        )
+
+        embed.set_footer(
+            text="يرجى الالتزام بقوانين السيرفر"
+        )
+
+        await message.channel.send(
+            embed=embed,
+            delete_after=5
+        )
+
+    except discord.Forbidden:
+        pass
+
+    return
         
         # ==========================
     # ANTI MENTION SPAM
