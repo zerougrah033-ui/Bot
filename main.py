@@ -5,7 +5,6 @@ import asyncio
 import time
 import os
 from collections import defaultdict
-from huggingface_hub import InferenceClient
 # ==========================
 # CONFIG
 # ==========================
@@ -28,11 +27,6 @@ CHANNEL_CREATE_LIMIT = 3
 CHANNEL_CREATE_WINDOW = 10
 ROLE_CREATE_LIMIT = 3
 ROLE_CREATE_WINDOW = 10
-HF_TOKEN = os.getenv("HF_TOKEN")
-hf_client = InferenceClient(
-    provider="hf-inference",
-    api_key=HF_TOKEN
-)
 # ==========================
 # INTENTS
 # ==========================
