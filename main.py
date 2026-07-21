@@ -5,7 +5,6 @@ import asyncio
 import time
 import os
 from collections import defaultdict
-import requests
 from huggingface_hub import InferenceClient
 # ==========================
 # CONFIG
@@ -33,6 +32,8 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 hf_client = InferenceClient(
     provider="hf-inference",
     api_key=HF_TOKEN
+    if not HF_TOKEN:
+    raise ValueError("HF_TOKEN غير موجود في Environment Variables")
 )
 # ==========================
 # INTENTS
@@ -221,7 +222,7 @@ async def on_message(message: discord.Message):
         return
 
     # تجاهل المالك والإدارة
-    if is_protected(message.author):
+    ifis_protected(message.author):
     await bot.process_commands(message)
     return
 
