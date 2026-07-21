@@ -229,7 +229,7 @@ spam[uid] = [
     if now - t < SPAM_WINDOW
 ]
 
-if len(spam[uid]) >= SPAM_LIMIT:
+    if len(spam[uid]) >= SPAM_LIMIT:
     
 try:
     await message.delete()
