@@ -220,7 +220,7 @@ async def on_message(message: discord.Message):
         return
 
     # تجاهل المالك والإدارة
-    ifis_protected(message.author):
+    if is_protected(message.author):
     await bot.process_commands(message)
     return
 
