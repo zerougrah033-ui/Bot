@@ -32,8 +32,6 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 hf_client = InferenceClient(
     provider="hf-inference",
     api_key=HF_TOKEN
-    if not HF_TOKEN:
-    raise ValueError("HF_TOKEN غير موجود في Environment Variables")
 )
 # ==========================
 # INTENTS
