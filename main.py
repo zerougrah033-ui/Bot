@@ -176,28 +176,7 @@ async def punish(member: discord.Member, reason: str = "Auto Moderation"):
 
     except Exception as e:
         print(e)
-        # ==========================
-# BYPASS SYSTEM
-# ==========================
 
-def is_protected(member: discord.Member) -> bool:
-    """
-    الأعضاء الذين لا تطبق عليهم أنظمة الحماية
-    """
-
-    # مالك السيرفر
-    if member == member.guild.owner:
-        return True
-
-    perms = member.guild_permissions
-    
-    # أي شخص لديه صلاحيات إدارة
-    if (
-        perms.administrator
-    ):
-        return True
-    
-    return False
     # ==========================
 # MESSAGE EVENT
 # ==========================
