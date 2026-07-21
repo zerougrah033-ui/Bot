@@ -260,8 +260,6 @@ try:
     if "unsafe" in result:
          await message.delete()
 
-        warnings[uid]["count"] += 1
-        warnings[uid]["reason"] = "AI Toxic Message"
 
          await punish(message.author, "AI Toxic Message")
 
