@@ -218,7 +218,6 @@ async def on_message(message: discord.Message):
     if is_protected(message.author):
          await bot.process_commands(message)
          return
-        
         # ==========================
 # ANTI SPAM
 # ==========================
@@ -240,7 +239,7 @@ if len(spam[uid]) >= SPAM_LIMIT:
     warnings[uid]["count"] += 1
     warnings[uid]["reason"] = "Spam"
 
-        await punish(
+    await punish(
         message.author,
         "Spam"
     )
@@ -278,7 +277,6 @@ if len(spam[uid]) >= SPAM_LIMIT:
         pass
 
     return
-        
         # ==========================
     # ANTI MENTION SPAM
     # ==========================
