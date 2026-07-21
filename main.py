@@ -248,7 +248,8 @@ Message:
 Answer:
 """
 
-     response = hf_client.text_generation(
+     response =
+hf_client.text_generation(
         model="meta-llama/Llama-Guard-3-8B",
         prompt=prompt,
         max_new_tokens=2,
