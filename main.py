@@ -258,7 +258,7 @@ try:
     print("HF Response:", result)
 
     if "unsafe" in result:
-         await message.delete()
+                await message.delete()
 
 
          await punish(message.author, "AI Toxic Message")
