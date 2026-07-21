@@ -239,7 +239,7 @@ if len(spam[uid]) >= SPAM_LIMIT:
     warnings[uid]["count"] += 1
     warnings[uid]["reason"] = "Spam"
 
-    await punish(
+         await punish(
         message.author,
         "Spam"
     )
