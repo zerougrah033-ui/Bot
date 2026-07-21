@@ -191,11 +191,7 @@ def is_protected(member: discord.Member) -> bool:
 
     perms = member.guild_permissions
 
-    # أي شخص لديه صلاحيات إدارة
-    if (
-        perms.administrator
-    ):
-        return True
+  
 
     return False
     # ==========================
