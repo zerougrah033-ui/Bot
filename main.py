@@ -244,38 +244,6 @@ if len(spam[uid]) >= SPAM_LIMIT:
         "Spam"
     )
 
-    try:
-        embed = discord.Embed(
-            title="🚨 Auto Moderation",
-            description=f"{message.author.mention} تم اكتشاف مخالفة.",
-            color=discord.Color.red(),
-            timestamp=datetime.datetime.utcnow()
-        )
-
-        embed.add_field(
-            name="📌 المخالفة",
-            value="Spam",
-            inline=True
-        )
-
-        embed.add_field(
-            name="📊 عدد التحذيرات",
-            value=str(warnings[uid]["count"]),
-            inline=True
-        )
-
-        embed.set_footer(
-            text="يرجى الالتزام بقوانين السيرفر"
-        )
-
-        await message.channel.send(
-            embed=embed,
-            delete_after=5
-        )
-
-    except discord.Forbidden:
-        pass
-
     return
         # ==========================
     # ANTI MENTION SPAM
