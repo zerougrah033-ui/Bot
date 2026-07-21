@@ -261,9 +261,9 @@ try:
                 await message.delete()
 
 
-         await punish(message.author, "AI Toxic Message")
+                await punish(message.author, "AI Toxic Message")
 
-         await message.channel.send(
+                await message.channel.send(
             f"⚠️ {message.author.mention} تم حذف رسالتك لأنها تحتوي على كلام غير لائق.",
             delete_after=10)
          return
