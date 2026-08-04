@@ -20,6 +20,8 @@ bot = commands.Bot(
 @bot.event
 async def setup_hook():
     for folder in ["events", "commands"]:
+        await bot.tree.sync()
+        print("Slash Commands Synced ✅")
         if os.path.exists(folder):
             for file in os.listdir(folder):
                 if file.endswith(".py"):
