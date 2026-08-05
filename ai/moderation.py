@@ -1,6 +1,8 @@
 import asyncio
 from huggingface_hub import InferenceClient
+
 from config import HF_TOKEN
+
 
 client = InferenceClient(
     provider="hf-inference",
@@ -9,36 +11,43 @@ client = InferenceClient(
 
 
 async def check_message(message: str):
-    prompt = f"""
-You are a moderation AI.
-
-Determine whether the following message is safe or unsafe.
-
-Rules:
-- Reply with ONLY one word.
-- Reply "safe" if the message is acceptable.
-- Reply "unsafe" if it contains insults, harassment, hate speech, threats, bullying, discrimination, or toxic behavior.
-
-Message:
-{message}
-"""
 
     try:
         result = await asyncio.to_thread(
-            client.text_generation,
-            prompt,
-            model="meta-llama/Llama-Guard-3-8B",
-            max_new_tokens=5,
-            temperature=0
+            client.text_classification,
+            message,
+            model="unitary/toxic-bert"
         )
 
-        result = result.strip().lower()
+        if not result:
+            return {
+                "toxic": False,
+                "score": 0
+            }
 
-        if "unsafe" in result:
-            return False
+        data = result[0]
 
-        return True
+        label = data["label"].lower()
+        score = data["score"]
+
+        # إذا النموذج اعتبرها toxic
+        if label == "toxic" and score >= 0.85:
+            return {
+                "toxic": True,
+                "score": score
+            }
+
+        return {
+            "toxic": False,
+            "score": score
+        }
+
 
     except Exception as e:
-        print(f"Hugging Face Error: {e}")
-        return True
+        print("Hugging Face Error:", e)
+
+        # إذا تعطل الـ AI لا يعطل البوت
+        return {
+            "toxic": False,
+            "score": 0
+        }
