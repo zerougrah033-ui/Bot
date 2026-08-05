@@ -7,6 +7,7 @@ from collections import defaultdict
 from ai.moderation import check_message
 from utils.logger import send_log
 from utils.punish import punish
+from utils.protection import is_protected
 
 
 SPAM_LIMIT = 5
@@ -48,65 +49,61 @@ class MessageEvents(commands.Cog):
                 await message.delete()
             except discord.Forbidden:
                 pass
+                # الإدارة والمالك
+                if is_protected(message.author):
 
-            # الإدارة والمالك
-            if (
-                message.author == message.guild.owner
-                or message.author.guild_permissions.administrator
-            ):
+                     embed = discord.Embed(
+        title="⚠️ Staff Message Removed",
+        color=discord.Color.orange()
+    )
 
-                embed = discord.Embed(
-                    title="⚠️ Staff Message Removed",
-                    color=discord.Color.orange()
-                )
+    embed.set_thumbnail(
+        url=message.author.display_avatar.url
+    )
 
-                embed.set_thumbnail(
-                    url=message.author.display_avatar.url
-                )
+    embed.add_field(
+        name="👤 Staff",
+        value=message.author.mention,
+        inline=False
+    )
 
-                embed.add_field(
-                    name="👤 Staff",
-                    value=message.author.mention,
-                    inline=False
-                )
+    embed.add_field(
+        name="💬 Message",
+        value=f"```{message.content[:1000]}```",
+        inline=False
+    )
 
-                embed.add_field(
-                    name="💬 Message",
-                    value=f"```{message.content[:1000]}```",
-                    inline=False
-                )
+    embed.add_field(
+        name="🏷️ Reason",
+        value=reason,
+        inline=True
+    )
 
-                embed.add_field(
-                    name="🏷️ Reason",
-                    value=reason,
-                    inline=True
-                )
+    embed.add_field(
+        name="📈 AI Score",
+        value=f"{score}%",
+        inline=True
+    )
 
-                embed.add_field(
-                    name="📈 AI Score",
-                    value=f"{score}%",
-                    inline=True
-                )
+    embed.add_field(
+        name="📝 Action",
+        value="Message Deleted Only",
+        inline=False
+    )
 
-                embed.add_field(
-                    name="📝 Action",
-                    value="Message Deleted Only",
-                    inline=False
-                )
+    embed.add_field(
+        name="📍 Channel",
+        value=message.channel.mention,
+        inline=False
+    )
 
-                embed.add_field(
-                    name="📍 Channel",
-                    value=message.channel.mention,
-                    inline=False
-                )
+    embed.set_footer(
+        text="Mafia Bot • AI Moderation"
+    )
 
-                embed.set_footer(
-                    text="Mafia Bot • AI Moderation"
-                )
+    await send_log(self.bot, embed)
 
-                await send_log(self.bot, embed)
-
-                return
+    return
                         # ==========================
         # AI PUNISHMENT
         # ==========================
