@@ -12,32 +12,32 @@ async def check_message(text):
     try:
         result = client.text_classification(
             text,
-            model=MODEL
+            model=MODEL_NAME
         )
 
-        prediction = result[0]
+        prediction = max(
+            result,
+            key=lambda x: x["score"]
+        )
 
-        result = max(result, key=lambda x: x["score"])
-
-label = result["label"]
-score = result["score"]
-
-print("AI RESULT:", label, score)
+        label = prediction["label"]
+        score = prediction["score"]
 
         print("TEXT:", text)
         print("AI RESULT:", label, score)
 
-        if label == "toxic" and score > 0.8:
-    await message.delete()
+        toxic_labels = [
+            "toxic",
+            "negative",
+            "hate",
+            "insult"
+        ]
 
-    await punish(
-        message.author,
-        "Toxic message"
-    )
+        is_toxic = label.lower() in toxic_labels and score > 0.80
 
         return {
-            "toxic": False,
-            "reason": "Safe",
+            "toxic": is_toxic,
+            "reason": label,
             "score": round(score * 100, 2)
         }
 
