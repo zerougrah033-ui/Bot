@@ -267,5 +267,5 @@ class MessageEvents(commands.Cog):
             spam_cache[uid].clear()
 
 
-async def setup(bot):
+sync def setup(bot):
     await bot.add_cog(MessageEvents(bot))
