@@ -7,17 +7,25 @@ class VoiceEvents(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-
-        # إذا كان الشخص خرج من روم صوتي وكان عليه Server Mute
+    async def on_voice_state_update(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState
+    ):
+        # إذا خرج العضو من الروم وكان عليه Server Mute
         if before.channel is not None and after.channel is None:
-            if member.voice and member.voice.mute:
+            if before.mute:
                 try:
-                    await member.edit(mute=False, reason="Left voice channel")
+                    await member.edit(
+                        mute=False,
+                        reason="Auto unmute after leaving voice channel"
+                    )
+                    print(f"Auto unmuted: {member}")
                 except discord.Forbidden:
-                    pass
-                except discord.HTTPException:
-                    pass
+                    print("Missing Permissions")
+                except discord.HTTPException as e:
+                    print(f"Error: {e}")
 
 
 async def setup(bot):
