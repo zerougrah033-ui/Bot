@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 
 from ai.moderation import check_message
-from utils.punish import punish
+from utils.protection import is_protected
 
 
 # ==========================
