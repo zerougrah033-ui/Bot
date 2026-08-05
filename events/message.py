@@ -104,39 +104,34 @@ async def setup(bot):
             await message.delete()
 
 
-            # عضو عادي
-            if not is_protected(message.author):
+            try:
+    await message.delete()
+except discord.Forbidden:
+    pass
 
-                warns, action = await punish(
-                    message.author,
-                    result["reason"]
-                )
+# رسالة مؤقتة للعضو
+try:
+    warn_msg = await message.channel.send(
+        f"{message.author.mention} ⚠️ يمنع استخدام الألفاظ المسيئة."
+    )
 
+    await warn_msg.delete(delay=5)
 
-                await send_log(
-                    bot,
-                    message,
-                    result["reason"],
-                    warns,
-                    action,
-                    result["score"]
-                )
+except:
+    pass
 
+# إرسال لوق للإدارة
+await send_log(
+    bot,
+    message,
+    result["reason"],
+    0,
+    "Deleted Message",
+    result["score"]
+)
 
-            # إدارة
-            else:
-
-                await send_log(
-                    bot,
-                    message,
-                    result["reason"],
-                    0,
-                    "Staff - No Punishment",
-                    result["score"]
-                )
-
-
-            return
+return
+            
 
 
         await bot.process_commands(message)
