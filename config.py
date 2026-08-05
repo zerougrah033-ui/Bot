@@ -1,6 +1,6 @@
 import os
 
 TOKEN = os.getenv("TOKEN")
-HF_TOKEN = os.getenv("HF_TOKEN")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 LOG_CHANNEL_ID = 1525906374628741192
