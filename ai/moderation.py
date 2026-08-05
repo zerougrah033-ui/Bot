@@ -5,7 +5,7 @@ client = InferenceClient(
     token=os.getenv("HF_TOKEN")
 )
 
-MODEL_NAME = "sagorsarker/mbert-unseen-sentiment-analysis"
+MODEL_NAME = "CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment"
 
 
 async def check_message(text):
