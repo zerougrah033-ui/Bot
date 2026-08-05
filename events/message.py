@@ -50,9 +50,9 @@ class MessageEvents(commands.Cog):
             except discord.Forbidden:
                 pass
                 # الإدارة والمالك
-                if is_protected(message.author):
+if is_protected(message.author):
 
-                     embed = discord.Embed(
+    embed = discord.Embed(
         title="⚠️ Staff Message Removed",
         color=discord.Color.orange()
     )
