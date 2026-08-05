@@ -1,17 +1,4 @@
-import os
-from huggingface_hub import InferenceClient
-
-HF_TOKEN = os.getenv("HF_TOKEN")
-
-client = InferenceClient(
-    token=HF_TOKEN
-)
-
-MODEL = "unitary/toxic-bert"
-
-
 async def check_message(text):
-
     try:
         result = client.text_classification(
             text,
@@ -19,26 +6,24 @@ async def check_message(text):
         )
 
         prediction = result[0]
-        
-        print("AI RESULT:", prediction.label, prediction.score)
 
         label = prediction.label.lower()
-        score = round(prediction.score * 100, 2)
+        score = prediction.score
 
-        if label in ["toxic", "insult", "hate"] and score >= 80:
+        print("AI RESULT:", label, score)
+
+        if label == "toxic" and score >= 0.80:
             return {
                 "toxic": True,
-                "reason": label,
-                "score": score
+                "reason": "Toxic Message",
+                "score": round(score * 100, 2)
             }
 
-        else:
-            return {
-                "toxic": False,
-                "reason": "Safe",
-                "score": score
-            }
-
+        return {
+            "toxic": False,
+            "reason": "Safe",
+            "score": round(score * 100, 2)
+        }
 
     except Exception as e:
         print("AI Error:", e)
