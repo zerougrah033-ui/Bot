@@ -4,10 +4,10 @@ from discord.ext import commands
 from collections import defaultdict
 
 from utils.punish import punish
+from utils.logger import send_log
 
-# الإعدادات
-SPAM_LIMIT = 5      # عدد الرسائل
-SPAM_WINDOW = 5     # خلال كم ثانية
+SPAM_LIMIT = 5
+SPAM_WINDOW = 5
 
 spam_cache = defaultdict(list)
 
@@ -19,15 +19,10 @@ class MessageEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
 
-        # تجاهل البوتات
-        if message.author.bot:
+        # تجاهل البوتات والخاص
+        if message.author.bot or message.guild is None:
             return
 
-        # تجاهل الخاص
-        if message.guild is None:
-            return
-
-        # السماح للأوامر بالعمل
         await self.bot.process_commands(message)
 
         uid = message.author.id
@@ -35,13 +30,11 @@ class MessageEvents(commands.Cog):
 
         spam_cache[uid].append(now)
 
-        # حذف الرسائل القديمة من القائمة
         spam_cache[uid] = [
             t for t in spam_cache[uid]
             if now - t <= SPAM_WINDOW
         ]
 
-        # إذا وصل الحد
         if len(spam_cache[uid]) >= SPAM_LIMIT:
 
             try:
@@ -52,16 +45,61 @@ class MessageEvents(commands.Cog):
             except discord.Forbidden:
                 pass
 
-            warns = await punish(
+            warns, action = await punish(
                 message.author,
                 "Spam"
             )
 
-            await message.channel.send(
-                f"⚠️ {message.author.mention} تم اكتشاف Spam.\n"
-                f"عدد التحذيرات: **{warns}**",
-                delete_after=8
+            embed = discord.Embed(
+                title="🚨 Anti Spam Detected",
+                color=discord.Color.red()
             )
+
+            embed.set_thumbnail(
+                url=message.author.display_avatar.url
+            )
+
+            embed.add_field(
+                name="👤 Member",
+                value=f"{message.author.mention}\n`{message.author.id}`",
+                inline=False
+            )
+
+            embed.add_field(
+                name="📝 Reason",
+                value="Spam",
+                inline=True
+            )
+
+            embed.add_field(
+                name="📊 Warnings",
+                value=str(warns),
+                inline=True
+            )
+
+            embed.add_field(
+                name="⛔ Action",
+                value=action,
+                inline=False
+            )
+
+            embed.add_field(
+                name="💬 Messages",
+                value=f"{SPAM_LIMIT} messages in {SPAM_WINDOW} seconds",
+                inline=False
+            )
+
+            embed.add_field(
+                name="📍 Channel",
+                value=message.channel.mention,
+                inline=False
+            )
+
+            embed.set_footer(
+                text="Mafia Bot • Anti Spam"
+            )
+
+            await send_log(self.bot, embed)
 
             spam_cache[uid].clear()
 
