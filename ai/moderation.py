@@ -6,7 +6,8 @@ async def check_message(text):
         )
 
         prediction = result[0]
-
+        print("TEXT:", text)
+print("AI RESULT:", label, score)
         label = prediction.label.lower()
         score = prediction.score
 
