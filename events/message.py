@@ -45,7 +45,7 @@ class MessageEvents(commands.Cog):
             score = int(ai_result["score"])
             reason = ai_result["reason"]
 
-                        try:
+            try:
                 await message.delete()
             except discord.Forbidden:
                 pass
