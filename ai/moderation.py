@@ -5,7 +5,7 @@ client = InferenceClient(
     token=os.getenv("HF_TOKEN")
 )
 
-MODEL_NAME = "unitary/multilingual-toxic-xlm-roberta"
+MODEL_NAME = "akhooli/xlm-r-large-arabic-toxic"
 
 
 async def check_message(text):
