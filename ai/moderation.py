@@ -1,12 +1,11 @@
 import os
-import traceback
 from huggingface_hub import InferenceClient
 
 client = InferenceClient(
     token=os.getenv("HF_TOKEN")
 )
 
-MODEL_NAME = "hossam87/bert-base-arabic-hate-speech"
+MODEL_NAME = "CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment"
 
 
 async def check_message(text):
@@ -16,53 +15,34 @@ async def check_message(text):
             model=MODEL_NAME
         )
 
-        if not result:
-            return {
-                "toxic": False,
-                "level": "safe",
-                "reason": "No Result",
-                "score": 0
-            }
-
-        prediction = max(
-            result,
-            key=lambda x: x["score"]
-        )
+        prediction = max(result, key=lambda x: x["score"])
 
         label = prediction["label"].lower()
-        score = float(prediction["score"])
+        score = prediction["score"]
 
         print("TEXT:", text)
         print("AI RESULT:", label, score)
 
+        # أقل من 75% = تجاهل
         if score < 0.75:
-            level = "safe"
-            toxic = False
+            return {
+                "toxic": False,
+                "reason": label,
+                "score": round(score * 100, 2)
+            }
 
-        elif score < 0.90:
-            level = "delete"
-            toxic = True
-
-        else:
-            level = "warn"
-            toxic = True
-
+        # 75% وفوق = اعتبرها مسيئة
         return {
-            "toxic": toxic,
-            "level": level,
+            "toxic": label == "negative",
             "reason": label,
             "score": round(score * 100, 2)
         }
 
     except Exception as e:
-        print("========== AI ERROR ==========")
-        print(repr(e))
-        traceback.print_exc()
-        print("==============================")
+        print("AI Error:", e)
 
         return {
             "toxic": False,
-            "level": "safe",
             "reason": "AI Error",
             "score": 0
         }
