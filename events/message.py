@@ -4,9 +4,9 @@ import discord
 from discord.ext import commands
 from collections import defaultdict
 
-from utils.punish import punish
-from utils.logger import send_log
 from ai.moderation import check_message
+from utils.logger import send_log
+from utils.punish import punish
 
 
 SPAM_LIMIT = 5
@@ -24,14 +24,14 @@ class MessageEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
 
-        # تجاهل البوتات والخاص
+        # تجاهل البوتات والرسائل الخاصة
         if message.author.bot or message.guild is None:
             return
-            print("MESSAGE:", message.content)
 
+        print("MESSAGE:", message.content)
 
+        # تشغيل الأوامر
         await self.bot.process_commands(message)
-
 
         # ==========================
         # AI MODERATION
@@ -41,15 +41,15 @@ class MessageEvents(commands.Cog):
 
         if ai_result["toxic"]:
 
-            score = int(ai_result["score"] * 100)
+            score = int(ai_result["score"])
+            reason = ai_result["reason"]
 
             try:
                 await message.delete()
             except discord.Forbidden:
                 pass
 
-
-            # إذا كان Owner أو Admin
+            # الإدارة والمالك
             if (
                 message.author == message.guild.owner
                 or message.author.guild_permissions.administrator
@@ -58,6 +58,10 @@ class MessageEvents(commands.Cog):
                 embed = discord.Embed(
                     title="⚠️ Staff Message Removed",
                     color=discord.Color.orange()
+                )
+
+                embed.set_thumbnail(
+                    url=message.author.display_avatar.url
                 )
 
                 embed.add_field(
@@ -73,6 +77,12 @@ class MessageEvents(commands.Cog):
                 )
 
                 embed.add_field(
+                    name="🏷️ Reason",
+                    value=reason,
+                    inline=True
+                )
+
+                embed.add_field(
                     name="📈 AI Score",
                     value=f"{score}%",
                     inline=True
@@ -84,76 +94,87 @@ class MessageEvents(commands.Cog):
                     inline=False
                 )
 
+                embed.add_field(
+                    name="📍 Channel",
+                    value=message.channel.mention,
+                    inline=False
+                )
+
+                embed.set_footer(
+                    text="Mafia Bot • AI Moderation"
+                )
+
                 await send_log(self.bot, embed)
 
                 return
-                          # ==========================
-            # AI PUNISHMENT + LOG
-            # ==========================
-
-            warns, action = await punish(
-                message.author,
-                "AI Toxic Message"
-            )
-
-            embed = discord.Embed(
-                title="🤖 AI Moderation",
-                color=discord.Color.orange()
-            )
-
-            embed.set_thumbnail(
-                url=message.author.display_avatar.url
-            )
-
-            embed.add_field(
-                name="👤 Member",
-                value=f"{message.author.mention}\n`{message.author.id}`",
-                inline=False
-            )
-
-            embed.add_field(
-                name="💬 Message",
-                value=f"```{message.content[:1000]}```",
-                inline=False
-            )
-
-            embed.add_field(
-                name="📈 AI Score",
-                value=f"{score}%",
-                inline=True
-            )
-
-            embed.add_field(
-                name="📊 Warnings",
-                value=str(warns),
-                inline=True
-            )
-
-            embed.add_field(
-                name="⛔ Action",
-                value=action,
-                inline=False
-            )
-
-            embed.add_field(
-                name="📍 Channel",
-                value=message.channel.mention,
-                inline=False
-            )
-
-            embed.set_footer(
-                text="Mafia Bot • AI Moderation"
-            )
-
-            await send_log(
-                self.bot,
-                embed
-            )
-
-            return
-
-
+                        # ==========================
+        # AI PUNISHMENT
         # ==========================
+
+        warns, action = await punish(
+            message.author,
+            "AI Toxic Message"
+        )
+
+        embed = discord.Embed(
+            title="🤖 AI Moderation",
+            color=discord.Color.orange()
+        )
+
+        embed.set_thumbnail(
+            url=message.author.display_avatar.url
+        )
+
+        embed.add_field(
+            name="👤 Member",
+            value=f"{message.author.mention}\n`{message.author.id}`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="💬 Message",
+            value=f"```{message.content[:1000]}```",
+            inline=False
+        )
+
+        embed.add_field(
+            name="🏷️ Reason",
+            value=reason,
+            inline=True
+        )
+
+        embed.add_field(
+            name="📈 AI Score",
+            value=f"{score}%",
+            inline=True
+        )
+
+        embed.add_field(
+            name="📊 Warnings",
+            value=str(warns),
+            inline=True
+        )
+
+        embed.add_field(
+            name="⛔ Action",
+            value=action,
+            inline=True
+        )
+
+        embed.add_field(
+            name="📍 Channel",
+            value=message.channel.mention,
+            inline=False
+        )
+
+        embed.set_footer(
+            text="Mafia Bot • AI Moderation"
+        )
+
+        await send_log(self.bot, embed)
+
+        return
+                # ==========================
         # ANTI SPAM
         # ==========================
 
@@ -167,7 +188,6 @@ class MessageEvents(commands.Cog):
             if now - t <= SPAM_WINDOW
         ]
 
-
         if len(spam_cache[uid]) >= SPAM_LIMIT:
 
             try:
@@ -179,12 +199,10 @@ class MessageEvents(commands.Cog):
             except discord.Forbidden:
                 pass
 
-
             warns, action = await punish(
                 message.author,
                 "Spam"
             )
-
 
             embed = discord.Embed(
                 title="🚨 Anti Spam Detected",
@@ -234,7 +252,6 @@ class MessageEvents(commands.Cog):
             embed.set_footer(
                 text="Mafia Bot • Anti Spam"
             )
-
 
             await send_log(
                 self.bot,
