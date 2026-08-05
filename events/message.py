@@ -27,6 +27,7 @@ class MessageEvents(commands.Cog):
         # تجاهل البوتات والخاص
         if message.author.bot or message.guild is None:
             return
+            print("MESSAGE:", message.content)
 
 
         await self.bot.process_commands(message)
