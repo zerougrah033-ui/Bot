@@ -20,31 +20,44 @@ async def check_message(text):
             key=lambda x: x["score"]
         )
 
-        label = prediction["label"]
+        label = prediction["label"].lower()
         score = prediction["score"]
 
         print("TEXT:", text)
         print("AI RESULT:", label, score)
 
-        if label.lower() == "toxic":
-            if score >= 0.90:
-                is_toxic = True
-            else:
-                is_toxic = False
-        else:
-            is_toxic = False
+        toxic = False
+        level = "safe"
+
+        # أقل من 75% تجاهل
+        if score < 0.75:
+            toxic = False
+            level = "safe"
+
+        # من 75 إلى 90 حذف فقط
+        elif score < 0.90:
+            toxic = True
+            level = "delete"
+
+        # 90 وفوق حذف + تحذير
+        elif score >= 0.90:
+            toxic = True
+            level = "warn"
 
         return {
-            "toxic": is_toxic,
+            "toxic": toxic,
+            "level": level,
             "reason": label,
             "score": round(score * 100, 2)
         }
+
 
     except Exception as e:
         print("AI Error:", e)
 
         return {
             "toxic": False,
+            "level": "safe",
             "reason": "AI Error",
             "score": 0
         }
