@@ -1,3 +1,11 @@
+from huggingface_hub import InferenceClient
+
+client = InferenceClient(
+    token=os.getenv("HF_TOKEN")
+)
+
+MODEL = "unitary/toxic-bert"
+
 
 async def check_message(text):
     try:
@@ -8,11 +16,10 @@ async def check_message(text):
 
         prediction = result[0]
 
-        print("TEXT:", text)
-
         label = prediction.label.lower()
         score = prediction.score
 
+        print("TEXT:", text)
         print("AI RESULT:", label, score)
 
         if label == "toxic" and score >= 0.80:
