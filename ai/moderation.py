@@ -26,14 +26,13 @@ async def check_message(text):
         print("TEXT:", text)
         print("AI RESULT:", label, score)
 
-        toxic_labels = [
-            "toxic",
-            "negative",
-            "hate",
-            "insult"
-        ]
-
-        is_toxic = label.lower() in toxic_labels and score > 0.80
+        if label.lower() == "toxic":
+            if score >= 0.90:
+                is_toxic = True
+            else:
+                is_toxic = False
+        else:
+            is_toxic = False
 
         return {
             "toxic": is_toxic,
