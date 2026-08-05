@@ -7,17 +7,42 @@ client = InferenceClient(
     token=HF_TOKEN
 )
 
-MODEL = "aubmindlab/bert-base-arabertv02"
+MODEL = "unitary/toxic-bert"
+
 
 async def check_message(text):
+
     try:
         result = client.text_classification(
             text,
             model=MODEL
         )
 
-        return result[0].label
+        prediction = result[0]
+
+        label = prediction.label.lower()
+        score = round(prediction.score * 100, 2)
+
+        if label in ["toxic", "insult", "hate"]:
+            return {
+                "toxic": True,
+                "reason": label,
+                "score": score
+            }
+
+        else:
+            return {
+                "toxic": False,
+                "reason": "Safe",
+                "score": score
+            }
+
 
     except Exception as e:
         print("AI Error:", e)
-        return "safe"
+
+        return {
+            "toxic": False,
+            "reason": "AI Error",
+            "score": 0
+        }
