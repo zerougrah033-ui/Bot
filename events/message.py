@@ -97,42 +97,33 @@ async def setup(bot):
         result = await check_message(
             message.content
         )
-
-
-        if result["toxic"]:
-
-            await message.delete()
-
+                if result["toxic"]:
 
             try:
-    await message.delete()
-except discord.Forbidden:
-    pass
+                await message.delete()
+            except discord.Forbidden:
+                pass
 
-# رسالة مؤقتة للعضو
-try:
-    warn_msg = await message.channel.send(
-        f"{message.author.mention} ⚠️ يمنع استخدام الألفاظ المسيئة."
-    )
+            # رسالة مؤقتة للعضو
+            try:
+                warn_msg = await message.channel.send(
+                    f"{message.author.mention} ⚠️ يمنع استخدام الألفاظ المسيئة."
+                )
+                await warn_msg.delete(delay=5)
+            except Exception:
+                pass
 
-    await warn_msg.delete(delay=5)
+            # إرسال لوق للإدارة
+            await send_log(
+                bot,
+                message,
+                result["reason"],
+                0,
+                "Deleted Message",
+                result["score"]
+            )
 
-except:
-    pass
-
-# إرسال لوق للإدارة
-await send_log(
-    bot,
-    message,
-    result["reason"],
-    0,
-    "Deleted Message",
-    result["score"]
-)
-
-return
-            
-
+            return
 
         await bot.process_commands(message)
 
