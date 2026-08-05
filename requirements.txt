@@ -2,4 +2,4 @@ discord.py
 python-dotenv
 aiohttp
 aiosqlite
-google-generativeai
+huggingface_hub
