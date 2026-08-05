@@ -1,3 +1,4 @@
+import asyncio
 from huggingface_hub import InferenceClient
 from config import HF_TOKEN
 
@@ -8,7 +9,6 @@ client = InferenceClient(
 
 
 async def check_message(message: str):
-
     prompt = f"""
 You are a moderation AI.
 
@@ -24,9 +24,12 @@ Message:
 """
 
     try:
-        result = client.text_generation(
+        result = await asyncio.to_thread(
+            client.text_generation,
             prompt,
-            model="meta-llama/Llama-Guard-3-8B"
+            model="meta-llama/Llama-Guard-3-8B",
+            max_new_tokens=5,
+            temperature=0
         )
 
         result = result.strip().lower()
@@ -37,5 +40,5 @@ Message:
         return True
 
     except Exception as e:
-        print("HF Error:", e)
+        print(f"Hugging Face Error: {e}")
         return True
