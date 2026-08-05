@@ -11,53 +11,63 @@ async def punish(member: discord.Member, reason: str):
     add_warning(guild.id, member.id)
     warns = get_warnings(guild.id, member.id)
 
-    # العقوبات
+    action = "Warning"
+
     if warns == 1:
         await member.timeout(
             timedelta(minutes=30),
             reason=reason
         )
+        action = "Timeout (30 Minutes)"
 
     elif warns == 2:
         await member.timeout(
             timedelta(hours=1),
             reason=reason
         )
+        action = "Timeout (1 Hour)"
 
     elif warns == 3:
         await member.timeout(
             timedelta(hours=3),
             reason=reason
         )
+        action = "Timeout (3 Hours)"
 
     elif warns == 4:
         await member.timeout(
             timedelta(hours=6),
             reason=reason
         )
+        action = "Timeout (6 Hours)"
 
     elif warns == 5:
         await member.timeout(
             timedelta(hours=12),
             reason=reason
         )
+        action = "Timeout (12 Hours)"
 
     elif warns == 6:
         await member.timeout(
             timedelta(days=1),
             reason=reason
         )
+        action = "Timeout (1 Day)"
 
     elif warns == 7:
         await member.timeout(
             timedelta(days=3),
             reason=reason
         )
+        action = "Timeout (3 Days)"
 
     elif warns == 8:
         await member.kick(reason=reason)
+        action = "Kick"
 
     elif warns >= 9:
         await member.ban(reason=reason)
+        action = "Ban"
 
-    return warns
+    return warns, action
