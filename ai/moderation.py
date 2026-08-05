@@ -10,36 +10,33 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 async def check_message(message: str):
 
     prompt = f"""
-You are an AI moderation system.
+You are a Discord moderation AI.
 
-Analyze the following Discord message.
+Analyze the message.
 
-Return ONLY valid JSON.
+Reply ONLY with valid JSON.
 
 Example:
 
 {{
-    "toxic": true,
-    "score": 95
+  "toxic": true,
+  "score": 95,
+  "reason": "Harassment"
 }}
 
 Rules:
 
-- toxic = true if the message contains:
-  - insults
-  - harassment
-  - bullying
-  - hate speech
-  - racism
-  - threats
-  - discrimination
-  - offensive language
-
-- toxic = false otherwise.
-
+- Detect Arabic and English.
+- toxic must be true or false.
 - score must be from 0 to 100.
-
-The AI must understand Arabic and English.
+- reason must be one of:
+  Harassment
+  Hate Speech
+  Threat
+  Bullying
+  Racism
+  Offensive Language
+  Safe
 
 Message:
 
@@ -64,6 +61,15 @@ Message:
 
         data = json.loads(text)
 
+        if "toxic" not in data:
+            data["toxic"] = False
+
+        if "score" not in data:
+            data["score"] = 0
+
+        if "reason" not in data:
+            data["reason"] = "Safe"
+
         return data
 
     except Exception as e:
@@ -72,5 +78,6 @@ Message:
 
         return {
             "toxic": False,
-            "score": 0
+            "score": 0,
+            "reason": "Error"
         }
