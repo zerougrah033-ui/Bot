@@ -19,6 +19,7 @@ async def check_message(text):
         )
 
         prediction = result[0]
+        
         print("AI RESULT:", prediction.label, prediction.score)
 
         label = prediction.label.lower()
