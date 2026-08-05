@@ -1,53 +1,75 @@
 import asyncio
-from huggingface_hub import InferenceClient
+import json
 
-from config import HF_TOKEN
+from google import genai
+from config import GEMINI_API_KEY
 
-
-client = InferenceClient(
-    provider="hf-inference",
-    api_key=HF_TOKEN
-)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 async def check_message(message: str):
 
+    prompt = f"""
+You are an AI moderation system.
+
+Analyze the following Discord message.
+
+Return ONLY valid JSON.
+
+Example:
+
+{{
+    "toxic": true,
+    "score": 95
+}}
+
+Rules:
+
+- toxic = true if the message contains:
+  - insults
+  - harassment
+  - bullying
+  - hate speech
+  - racism
+  - threats
+  - discrimination
+  - offensive language
+
+- toxic = false otherwise.
+
+- score must be from 0 to 100.
+
+The AI must understand Arabic and English.
+
+Message:
+
+{message}
+"""
+
     try:
-        result = await asyncio.to_thread(
-            client.text_classification,
-            message,
-            model="unitary/toxic-bert"
+
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model="gemini-2.5-flash",
+            contents=prompt,
         )
 
-        if not result:
-            return {
-                "toxic": False,
-                "score": 0
-            }
+        text = response.text.strip()
 
-        data = result[0]
+        if text.startswith("```json"):
+            text = text.replace("```json", "").replace("```", "").strip()
 
-        label = data["label"].lower()
-        score = data["score"]
+        elif text.startswith("```"):
+            text = text.replace("```", "").strip()
 
-        # إذا النموذج اعتبرها toxic
-        if label == "toxic" and score >= 0.85:
-            return {
-                "toxic": True,
-                "score": score
-            }
+        data = json.loads(text)
 
-        return {
-            "toxic": False,
-            "score": score
-        }
-
+        return data
 
     except Exception as e:
-        print("Hugging Face Error:", e)
-        print("AI RESULT:", result)
 
-        # إذا تعطل الـ AI لا يعطل البوت
+        print("Gemini Error:", e)
+
         return {
             "toxic": False,
             "score": 0
