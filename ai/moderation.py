@@ -25,7 +25,7 @@ async def check_message(text):
         label = prediction.label.lower()
         score = round(prediction.score * 100, 2)
 
-        if label in ["toxic", "insult", "hate"]:
+        if label in ["toxic", "insult", "hate"] and score >= 80:
             return {
                 "toxic": True,
                 "reason": label,
