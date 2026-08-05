@@ -4,7 +4,6 @@ from collections import defaultdict
 
 from ai.moderation import check_message
 from utils.punish import punish
-from utils.protection import is_protected
 
 
 # ==========================
@@ -97,7 +96,7 @@ async def setup(bot):
         result = await check_message(
             message.content
         )
-                if result["toxic"]:
+        if result["toxic"]:
 
             try:
                 await message.delete()
