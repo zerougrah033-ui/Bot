@@ -21,6 +21,50 @@ class Ban(commands.Cog):
         reason: str = "No reason provided."
     ):
 
+        # لا يمكن حظر نفسك
+        if member == interaction.user:
+            await interaction.response.send_message(
+                "❌ لا يمكنك حظر نفسك.",
+                ephemeral=True
+            )
+            return
+
+        # لا يمكن حظر البوت
+        if member == self.bot.user:
+            await interaction.response.send_message(
+                "❌ لا يمكنك حظر البوت.",
+                ephemeral=True
+            )
+            return
+
+        # لا يمكن حظر مالك السيرفر
+        if member == interaction.guild.owner:
+            await interaction.response.send_message(
+                "❌ لا يمكنك حظر مالك السيرفر.",
+                ephemeral=True
+            )
+            return
+
+        # التأكد أن رتبة البوت أعلى من رتبة العضو
+        if member.top_role >= interaction.guild.me.top_role:
+            await interaction.response.send_message(
+                "❌ لا أستطيع حظر هذا العضو لأن رتبته أعلى من رتبتي أو مساوية لها.",
+                ephemeral=True
+            )
+            return
+
+        # التأكد أن رتبة المنفذ أعلى من رتبة العضو
+        if (
+            member.top_role >= interaction.user.top_role
+            and interaction.user != interaction.guild.owner
+        ):
+            await interaction.response.send_message(
+                "❌ لا يمكنك حظر عضو رتبته أعلى من رتبتك أو مساوية لها.",
+                ephemeral=True
+            )
+            return
+
+        # تنفيذ البان
         await member.ban(reason=reason)
 
         await interaction.response.send_message(
@@ -53,14 +97,19 @@ class Ban(commands.Cog):
 
         await send_log(self.bot, embed)
 
-
     @ban.error
     async def ban_error(self, interaction: discord.Interaction, error):
-
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message(
                 "❌ You don't have permission.",
                 ephemeral=True
             )
+        else:
+            await interaction.response.send_message(
+                "❌ حدث خطأ أثناء تنفيذ الأمر.",
+                ephemeral=True
+            )
+
+
 async def setup(bot):
     await bot.add_cog(Ban(bot))
