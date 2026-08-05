@@ -5,5 +5,5 @@ TOKEN = os.getenv("TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 
-MODEL = "CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment"
+MODEL = "akhooli/xlm-r-large-arabic-toxic"
 LOG_CHANNEL_ID = 1525906374628741192
