@@ -1,108 +1,109 @@
-import time
-import discord
-from discord.ext import commands
-from collections import defaultdict
+# ==========================
+# AI Moderation
+# ==========================
 
-from utils.punish import punish
-from utils.logger import send_log
+safe = await check_message(message.content)
 
-SPAM_LIMIT = 5
-SPAM_WINDOW = 5
+if not safe:
 
-spam_cache = defaultdict(list)
+    try:
+        await message.delete()
+    except discord.Forbidden:
+        pass
 
+    # إذا كان مالك السيرفر أو Administrator
+    if (
+        message.author == message.guild.owner
+        or message.author.guild_permissions.administrator
+    ):
 
-class MessageEvents(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+        embed = discord.Embed(
+            title="⚠️ Staff Message Removed",
+            color=discord.Color.orange()
+        )
 
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+        embed.set_thumbnail(
+            url=message.author.display_avatar.url
+        )
 
-        # تجاهل البوتات والخاص
-        if message.author.bot or message.guild is None:
-            return
+        embed.add_field(
+            name="👤 Staff",
+            value=message.author.mention,
+            inline=False
+        )
 
-        await self.bot.process_commands(message)
+        embed.add_field(
+            name="💬 Message",
+            value=f"```{message.content[:1000]}```",
+            inline=False
+        )
 
-        uid = message.author.id
-        now = time.time()
+        embed.add_field(
+            name="📝 Action",
+            value="Message Deleted Only",
+            inline=False
+        )
 
-        spam_cache[uid].append(now)
+        embed.add_field(
+            name="📍 Channel",
+            value=message.channel.mention,
+            inline=False
+        )
 
-        spam_cache[uid] = [
-            t for t in spam_cache[uid]
-            if now - t <= SPAM_WINDOW
-        ]
+        embed.set_footer(
+            text="Mafia Bot • AI Moderation"
+        )
 
-        if len(spam_cache[uid]) >= SPAM_LIMIT:
+        await send_log(self.bot, embed)
+        return
 
-            try:
-                await message.channel.purge(
-                    limit=SPAM_LIMIT,
-                    check=lambda m: m.author.id == uid
-                )
-            except discord.Forbidden:
-                pass
+    warns, action = await punish(
+        message.author,
+        "AI Toxic Message"
+    )
 
-            warns, action = await punish(
-                message.author,
-                "Spam"
-            )
+    embed = discord.Embed(
+        title="🤖 AI Moderation",
+        color=discord.Color.orange()
+    )
 
-            embed = discord.Embed(
-                title="🚨 Anti Spam Detected",
-                color=discord.Color.red()
-            )
+    embed.set_thumbnail(
+        url=message.author.display_avatar.url
+    )
 
-            embed.set_thumbnail(
-                url=message.author.display_avatar.url
-            )
+    embed.add_field(
+        name="👤 Member",
+        value=message.author.mention,
+        inline=False
+    )
 
-            embed.add_field(
-                name="👤 Member",
-                value=f"{message.author.mention}\n`{message.author.id}`",
-                inline=False
-            )
+    embed.add_field(
+        name="💬 Message",
+        value=f"```{message.content[:1000]}```",
+        inline=False
+    )
 
-            embed.add_field(
-                name="📝 Reason",
-                value="Spam",
-                inline=True
-            )
+    embed.add_field(
+        name="📊 Warnings",
+        value=str(warns),
+        inline=True
+    )
 
-            embed.add_field(
-                name="📊 Warnings",
-                value=str(warns),
-                inline=True
-            )
+    embed.add_field(
+        name="⛔ Action",
+        value=action,
+        inline=True
+    )
 
-            embed.add_field(
-                name="⛔ Action",
-                value=action,
-                inline=False
-            )
+    embed.add_field(
+        name="📍 Channel",
+        value=message.channel.mention,
+        inline=False
+    )
 
-            embed.add_field(
-                name="💬 Messages",
-                value=f"{SPAM_LIMIT} messages in {SPAM_WINDOW} seconds",
-                inline=False
-            )
+    embed.set_footer(
+        text="Mafia Bot • AI Moderation"
+    )
 
-            embed.add_field(
-                name="📍 Channel",
-                value=message.channel.mention,
-                inline=False
-            )
-
-            embed.set_footer(
-                text="Mafia Bot • Anti Spam"
-            )
-
-            await send_log(self.bot, embed)
-
-            spam_cache[uid].clear()
-
-
-async def setup(bot):
-    await bot.add_cog(MessageEvents(bot))
+    await send_log(self.bot, embed)
+    return
