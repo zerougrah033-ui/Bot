@@ -45,6 +45,7 @@ async def check_message(message: str):
 
     except Exception as e:
         print("Hugging Face Error:", e)
+        print("AI RESULT:", result)
 
         # إذا تعطل الـ AI لا يعطل البوت
         return {
