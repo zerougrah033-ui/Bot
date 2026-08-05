@@ -30,6 +30,7 @@ async def setup(bot):
 
     @bot.event
     async def on_message(message: discord.Message):
+        print("MESSAGE EVENT:", message.content)
 
         # تجاهل البوتات
         if message.author.bot:
