@@ -17,18 +17,23 @@ async def check_message(text):
 
         prediction = result[0]
 
-        label = prediction.label.lower()
-        score = prediction.score
+        result = max(result, key=lambda x: x["score"])
+
+label = result["label"]
+score = result["score"]
+
+print("AI RESULT:", label, score)
 
         print("TEXT:", text)
         print("AI RESULT:", label, score)
 
-        if label == "toxic" and score >= 0.80:
-            return {
-                "toxic": True,
-                "reason": "Toxic Message",
-                "score": round(score * 100, 2)
-            }
+        if label == "toxic" and score > 0.8:
+    await message.delete()
+
+    await punish(
+        message.author,
+        "Toxic message"
+    )
 
         return {
             "toxic": False,
