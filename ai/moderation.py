@@ -5,7 +5,7 @@ client = InferenceClient(
     token=os.getenv("HF_TOKEN")
 )
 
-MODEL = "unitary/toxic-bert"
+MODEL_NAME = "sagorsarker/mbert-unseen-sentiment-analysis"
 
 
 async def check_message(text):
