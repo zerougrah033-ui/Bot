@@ -1,6 +1,9 @@
 import os
 
 TOKEN = os.getenv("TOKEN")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+AI_MODEL = "aubmindlab/bert-base-arabertv02"
 
 LOG_CHANNEL_ID = 1525906374628741192
